@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, target-densitydpi=medium-dpi">
+    
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/moonspam/NanumSquare@1.0/nanumsquare.css">
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" href="iconset/MFGLabs/mfglabs_iconset.css">
+    <link href="iconset/fontawesome-free-5.13.0-web/css/all.css" rel="stylesheet">
+    
+	<title>unfolded memo</title>
+</head>
+<body>
+
+<div class="container">
+    <div id="momo-container" class="momo-container">
+    </div>
+    
+    <!-- 팝업메뉴 시작 -->
+    <div id="mask" class="popup-mask"></div>
+    <div id="popup-content" class="popup-content">
+        <div class="search-order">
+            정렬순서 <i class="icon-star memo-staroff"></i> ! !! !!!
+        </div>
+        <div class="hashtaglist">
+            <ul>
+                
+            </ul>
+        </div>
+    </div>
+    <!-- 팝업메뉴 끝 -->
+
+    <nav class="btn-wrap">
+        <ul>
+            <li class="menu btn btn-menu">
+                <i class="icon-reorder btn-icon"></i>
+            </li>
+            <li class='btn btn-search hide'>
+                <i class="icon-magnifying btn-icon"></i>	
+            </li>
+            <li class='btn btn-tag hide'>
+                <i class="icon-star btn-icon"></i>
+            </li>
+            <li class='btn btn-check hide'>
+                <i class="icon-check btn-icon"></i>	
+            </li>
+            <li class='btn btn-logout hide'> 
+                <i class="icon-signout btn-icon"></i>	
+            </li>
+            <li class='btn btn-write hide'>
+                <i class="icon-plus btn-icon"></i>	
+            </li>
+            <li class='textbox hide'>
+                <form id="menu_textbox">
+                    <input type='text' class='btn-textbox' id='search_textbox'>
+                </form>
+            </li>
+        </ul>
+    </nav>
+</div>
+
+<script type="text/Javascript" charset="UTF-8" src="common.js"></script>
+
+<script type="text/javascript">
+var menu_wrap = document.querySelector(".btn-wrap");
+var menu = menu_wrap.firstElementChild; 
+var ori_wid = "50px";
+var wid = "90%";
+
+var hashtagId = "hashtag_id";
+var hide_btn_class = "hide";
+
+var isDisplayHashtag = 0;//해쉬태그 불러왔는지 확인용
+var lastScrollTop = 0;//메뉴닫기할때 필요
+
+addMenuEvt();
+//getMemoList();
+switchmode();
+
+function switchmode() {
+	if(location.pathname.search("main") >= 0) {//.search("modify")
+		ajax_getJson('./moemo.view', '', displayMemolist, '');
+	}
+	else if(location.pathname.search("search") >= 0) {
+		ajax_getJson('./moemo.view', 'keyword='+location.search, displayMemolist, '');
+	}
+}
+
+function addMenuEvt() {
+	//이벤트 등록
+	tapEvt(function(e) {
+		//해쉬태그
+		var target = e.target;
+		if(target.id != null && target.id.indexOf(hashtagId) >= 0) {
+			
+//			addHashtag(target.id.replace(hashtagId, selectedId), target.firstChild.textContent);
+//			target.classList.add(hide_class);
+			return;
+		}
+		else if(target.id != null && target.id.indexOf("selected_id") >= 0) {
+			document.getElementById("selected-hashtag-list").removeChild(document.getElementById(target.id));
+			document.getElementById(target.id.replace(selectedId, hashtagId)).classList.remove(hide_class);
+			return;
+		}
+		
+		//별 토글
+		target = target.parentElement;
+		if(target == null) return;
+		
+		if(target.className == "starwrap") {
+			var staricon = target.firstElementChild;
+			var starvalue = "1";//현재상태 off
+			if(staricon.classList.toggle("offcolor"))
+				starvalue = "0";
+			ajax_getJson("./star.receive", ('idx=' + target.offsetParent.id +'&star=' + starvalue));
+			
+			return;
+		}
+		//상세페이지로
+		target = target.parentElement.parentElement;
+		//console.log(target);
+		if(target.localName == "article") {
+			var memo_idx = target.getAttribute("id");
+		    window.location.href = "./viewer?idx="+ +memo_idx;
+		}
+	});
+	
+    var li = menu.children;
+
+    li[0].addEventListener("click", function() {
+        menu_open();
+
+        lastScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    });
+
+    li[1].addEventListener("click", function() {
+        menu_search();
+    });
+
+    li[2].addEventListener("click", function() {
+        menu_star();
+    });
+
+    li[3].addEventListener("click", function() {
+        menu_check();
+    });
+
+    li[4].addEventListener("click", function() {
+        menu_logout();
+    });
+
+    li[5].addEventListener("click", function() {
+        menu_write();
+    });
+
+    //메뉴 닫기 
+    window.addEventListener("scroll", function() {
+        //console.log(this);
+        var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        if(scrollTop > lastScrollTop) return;
+
+        lastScrollTop = scrollTop;
+        menu_close();
+    });
+
+    var popup = document.getElementById("mask");
+    popup.addEventListener("click", function() {    
+        menu_close();
+    });
+}
+
+function hide_menu(n) {
+	var li = menu.children;
+    for(var i=0; i<li.length-1; i++)
+    {
+    	if(n === i) {
+    		li[i].classList.add(hide_btn_class);
+    		continue;
+		}
+    	
+        li[i].classList.remove(hide_btn_class);
+    }
+}
+
+function show_menu(n, n2) {
+	var li = menu.children;
+    for(var i=0; i<li.length; i++)
+    {
+    	if(n === i || n2 === i) {
+    		li[i].classList.remove(hide_btn_class);
+    		continue;
+		}
+    	
+        li[i].classList.add(hide_btn_class);
+    }
+}
+
+function menu_open() {
+    if(menu_wrap.style.width === wid) return;
+
+    menu_wrap.style.width = wid;
+
+    hide_menu(0)
+}
+
+function menu_close() {
+    if(menu_wrap.style.width === ori_wid) return;
+    //팝업
+    popup_close();
+
+    menu_wrap.style.width = ori_wid;
+
+    show_menu(0);
+}
+
+function popup_open(popupwindow) {
+    //마스크 켬
+    var popup = document.getElementById("mask");
+    popup.classList.add("popup-show");
+    //팝업창 켬
+    popup = document.getElementById(popupwindow);
+    popup.classList.add("popup-show");
+
+    //태그리스트 뿌리기
+    if(isDisplayHashtag === 0) {
+        var ul = popup.querySelector(".hashtaglist").firstElementChild;
+        ajax_getJson('./hashtag.view', '', displayHashtag, ul);
+    }
+}
+
+function popup_close() {
+    //마스크
+    var popup = document.getElementById("mask");
+    popup.classList.remove("popup-show");
+    //팝업창
+    popup = document.getElementById("popup-content");
+    popup.classList.remove("popup-show");
+}
+
+function menu_search() {
+    if(menu_wrap.style.width === ori_wid) return;
+
+    if(!document.getElementById("popup-content").classList.contains("popup-show")) {
+	    //팝업 열기
+	    popup_open("popup-content");
+	    //검색창 열기
+	    show_menu(1, 6);
+    }
+    else {
+    	//검색
+    	if(document.getElementById("search_textbox").value.length <= 0) return;
+    	
+    	//console.log(document.getElementById("search_textbox").value);
+    	var keyword = "keyword=" + document.getElementById("search_textbox").value;
+    	window.location.href = "./search?" + keyword;
+    }
+}
+
+function menu_star() {
+    if(menu_wrap.style.width === ori_wid) return;
+    
+}
+
+function menu_check() {
+    if(menu_wrap.style.width === ori_wid) return;
+
+
+}
+
+function menu_logout() {
+    if(menu_wrap.style.width !== wid) return;
+
+
+}
+
+function menu_write() {
+    if(menu_wrap.style.widthh === ori_wid) return;
+    
+    console.log("write");
+    window.location.href = "./write";
+    //window.location.replace("./write");//이건 뒤로가기 누르면 이상한것같음
+}
+
+function addEvt_star(id, func) {
+	var icon = document.getElementById(id);//.querySelector(".memo-bottom");//starwrap");
+	icon.addEventListener("click", func);
+}
+
+function v(e) {
+	console.log(e);
+}
+
+//*********************
+//여기부터 화면에 뿌리는 함수들 모음
+//*********************
+//해쉬태그
+function displayHashtag (ul, parsedJSON) {
+	var hashtagList = parsedJSON;
+	hashtagList.forEach(function(data) {
+		ul.innerHTML += '<li id="' + hashtagid + data.idx + '" class="hashtag-search inline">#' + data.hashtag + '</li>';
+	});
+	
+	isDisplayHashtag = 1;//태그 화면에 출력했으니 더이상 출력하지 말아라
+}
+
+//메모 화면에 뿌리기
+function displayMemolist (dom, parsedJSON) {
+	//var memojson = document.getAttribute("memolist");
+	//console.log(parsedJSON);
+    var memo = parsedJSON;
+    var condiv = document.getElementById("momo-container");
+    //일단 다지움
+    condiv.innerHTML = "";
+    
+    //console.log(condiv);
+    memo.forEach(function(data) {
+    	//star
+        var staroff = "offcolor";
+        if(data.star === "1")
+            staroff = "";
+        
+        //wowpoint
+        var hashtagli = "";
+        if(data.wowpoint === "1")
+        	hashtagli = "<li class='memo-hashtag memo-wowpoint'><i class='fas fa-exclamation'></i></li>";
+        else if(data.wowpoint === "2")
+        	hashtagli = "<li class='memo-hashtag memo-wowpoint'><i class='fas fa-exclamation'></i><i class='fas fa-exclamation'></i></li>";
+        else if(data.wowpoint === "3")
+        	hashtagli = "<li class='memo-hashtag memo-wowpoint'><i class='fas fa-exclamation'></i><i class='fas fa-exclamation'></i><i class='fas fa-exclamation'></i></li>";
+        
+        //hashtag
+        var contentli = data.hashtag.split('#')
+        contentli.forEach(function(tag) {
+            if(tag !== "")
+                hashtagli += '<li class="memo-hashtag">#' + tag + '</li>';
+        });
+        //뿌림
+		condiv.innerHTML += '<article id="' + data.idx + '" class="memo">' +
+	                            '<div class="momo-inner">' +
+	                                '<div class="memo-top">' +
+	                                    '<div class="memo-imp">'+'</div>' +
+	                                    '<div class="slider">' + 
+	                                        '<ul class="memo-hashtag-slider">' +
+	                                            hashtagli +
+	                                        '</ul>' +
+	                                    '</div>' +
+	                                '</div>' +
+	                                '<div class="memo-title">' +
+	                                    '<span>' + data.title + '</span>' +
+	                                '</div>' +
+	                                '<div class="memo-content">' +
+	                                    '<span>' + data.content + '</span>' +
+	                                '</div>' +
+	                                '<div class="memo-bottom">' +
+	                                    '<span class="memo-date">' + data.mdate.slice(0, 10) + '</span><span class="space">|</span>' + 
+	                                    '<span class="starwrap"><i class="icon-star memo-star ' + staroff +'"></i></span>' +
+	                                '</div>' +
+	                            '</div>' +
+	                        '</article>';
+    });
+}
+</script>
+
+</body>
+</html>
