@@ -15,6 +15,9 @@ var lastScrollTop = 0;//메뉴닫기할때 필요
 var page = 1;
 var scrollpage = 1;
 
+//삭제버튼 보관버튼용
+var SelectedArticle = null;
+
 addMenuEvt();
 loadmemo();
 
@@ -46,37 +49,112 @@ function loadmemo() {
 	}
 }
 
+//삭제 보관함 버튼 숨기기
+function article_btn_close(article) {
+	if(article == null)
+		return false;
+	
+	if(article.firstElementChild.childNodes[2].style.transform != "none") {
+		article.firstElementChild.childNodes[2].style.transform = "none";
+		article.firstElementChild.childNodes[0].style.width = "0";
+		article.firstElementChild.childNodes[1].style.width = "0";
+		
+		SelectedArticle = null;
+		
+		return true;
+	}
+	
+	return false;
+}
+
 function addMenuEvt() {
 	//각종 클릭 이벤트 등록
 	tapEvt(function(e) {
-		var target = e.target;
+		var p = e.target;
 		
-		//해쉬태그 선택 -> 검색창
-		if(target.id.indexOf(hashtagId) >= 0) {
-			var hashtag = "hashtag=" + target.id.replace(hashtagId, "");
-	    	window.location.href = "./search?" + hashtag;
-		}
-		
-		//별 토글
-		target = target.parentElement;
-		if(target == null) return;
-		
-		if(target.className == "starwrap") {
-			var staricon = target.firstElementChild;
-			var starvalue = "1";//현재상태 off
-			if(staricon.classList.toggle("offcolor"))
-				starvalue = "0";
-			ajax_getJson("./star.receive", ('idx=' + target.offsetParent.id +'&star=' + starvalue));
+		//팝업 버튼
+		//삭제버튼 클릭
+		if(p.id == "popup-btn-delete") {
+			if(SelectedArticle == null) return;
 			
-			return;
+			ajax_getJson('./deletememo.receive', 'idx='+SelectedArticle.id, function(){
+				SelectedArticle.parentElement.removeChild(SelectedArticle);
+				
+				//팝업닫기
+				popup_close("delete-popup");
+				SelectedArticle = null;
+			    //article_btn_close(SelectedArticle);
+			});
+			//SelectedArticle.firstElementChild.firstElementChild.style.transform = "translate3d(-100%, 0px, 0px)";
+			//SelectedArticle.parentElement.removeChild(SelectedArticle);
+			
+		    return;
 		}
-		//상세페이지로
-		target = target.parentElement.parentElement;
-		//console.log(target);
-		if(target.localName == "article") {
-			var memo_idx = target.getAttribute("id");
-		    window.location.href = "./viewer?idx="+ +memo_idx;
+		//취소버튼 클릭
+		if(p.id == "popup-btn-cancle" || p.id == "popup-btn-delete") {
+			popup_close("delete-popup");
+		    article_btn_close(SelectedArticle);
 		}
+		
+		//팝업닫기
+		if(p == document.getElementById("search-popup").firstElementChild) {
+		    menu_close();
+		    
+		    return;
+		}
+		if(p == document.getElementById("delete-popup").firstElementChild) {			
+		    popup_close("delete-popup");
+		    article_btn_close(SelectedArticle);
+		    
+		    return;
+		}
+		
+		//console.log(p);
+		while(p.parentElement != null) {
+			p = p.parentElement;
+			
+			//상세페이지로
+			if(p.localName == "article") {
+				//삭제버튼
+				if(e.target.className == "swipe-delete") {
+					popup_open("delete-popup");
+					console.log(p.id + " delete");
+					SelectedArticle = p;
+					
+					return;
+				}
+				//보관함버튼
+				if(e.target.className == "swipe-box") {
+					SelectedArticle = p;
+					return;
+				}
+				
+				if(article_btn_close(p)) return;
+				
+				var memo_idx = p.getAttribute("id");
+			    window.location.href = "./viewer?idx="+ +memo_idx;
+			    
+				break;
+			}
+			
+			//별 토글
+			if(p.className == "starwrap") {
+				var staricon = p.firstElementChild;
+				var starvalue = "1";//현재상태 off
+				if(staricon.classList.toggle("offcolor"))
+					starvalue = "0";
+				ajax_getJson("./star.receive", ('idx=' + p.offsetParent.id +'&star=' + starvalue));
+				
+				return;
+			}
+			
+			//해쉬태그 선택 -> 검색창
+			if(p.id.indexOf(hashtagId) >= 0) {
+				var hashtag = "hashtag=" + p.id.replace(hashtagId, "");
+		    	window.location.href = "./search?" + hashtag;
+			}
+		}
+		
 		
 	}, function(e) {//right
 		//console.log(e);//parentElement
@@ -84,23 +162,13 @@ function addMenuEvt() {
 		while(p.parentElement != null) {
 			p = p.parentElement;
 			if(p.localName == "article") {
-				if(p.firstElementChild.childNodes[2].style.transform != "none") {
-					p.firstElementChild.childNodes[2].style.transform = "none";
-					p.firstElementChild.childNodes[0].style.width = "0";
-					p.firstElementChild.childNodes[1].style.width = "0";
-					
-					return;
-				}
+				if(article_btn_close(p)) return;
 				
 				//memo-inner
 				p.firstElementChild.childNodes[2].style.transform = "translate3d(+30%, 0px, 0px)";
 				//swipe-box
 				p.firstElementChild.childNodes[0].style.width = "30%";
-				p.firstElementChild.childNodes[0].addEventListener("click", function(e) {
-					console.log(p.id + " box");
-					//p.firstElementChild.firstElementChild.style.transform = "translate3d(-100%, 0px, 0px)";
-					//p.parentElement.removeChild(p);
-				});
+				SelectedArticle = p;
 				
 				break;
 			}
@@ -112,24 +180,13 @@ function addMenuEvt() {
 		while(p.parentElement != null) {
 			p = p.parentElement;
 			if(p.localName == "article") {
-				if(p.firstElementChild.childNodes[2].style.transform != "none") {
-					p.firstElementChild.childNodes[2].style.transform = "none";
-					p.firstElementChild.childNodes[0].style.width = "0";
-					p.firstElementChild.childNodes[1].style.width = "0";
-					
-					return;
-				}
-				//ajax_getJson('./deletememo.receive', 'idx='+p.id, function(){p.parentElement.removeChild(p);});
+				if(article_btn_close(p)) return;
+				
 				//memo-inner
 				p.firstElementChild.childNodes[2].style.transform = "translate3d(-30%, 0px, 0px)";
 				//swipe-delete
 				p.firstElementChild.childNodes[1].style.width = "30%";
-				p.firstElementChild.childNodes[1].addEventListener("click", function(e) {
-					console.log(p.id + " delete");
-					//p.firstElementChild.firstElementChild.style.transform = "translate3d(-100%, 0px, 0px)";
-					//p.parentElement.removeChild(p);
-				});
-				console.log(p.id + " swipe");
+				SelectedArticle = p;
 				
 				break;
 			}
@@ -138,6 +195,17 @@ function addMenuEvt() {
 	
 	//스크롤
 	window.addEventListener("scroll", function(e) {
+	    //메뉴 닫기 
+        var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        if(scrollTop > lastScrollTop) return;
+
+        lastScrollTop = scrollTop;
+        menu_close();
+        
+        //보관함 삭제버튼 닫기
+        article_btn_close(SelectedArticle);
+        
+        //메모 불러오기
 		var scrollHeight = e.target.scrollingElement.scrollHeight;
 		var nowscroll = e.target.scrollingElement.scrollTop + e.target.scrollingElement.clientHeight;
 		if(scrollHeight - nowscroll < 50 && scrollpage+1 == page) {
@@ -217,20 +285,6 @@ function addMenuEvt() {
         menu_write();
     });
 
-    //메뉴 닫기 
-    window.addEventListener("scroll", function() {
-        //console.log(this);
-        var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        if(scrollTop > lastScrollTop) return;
-
-        lastScrollTop = scrollTop;
-        menu_close();
-    });
-
-    var popup = document.getElementById("mask");
-    popup.addEventListener("click", function() {    
-        menu_close();
-    });
 }
 
 function select_menu(n) {
@@ -308,7 +362,7 @@ function menu_open() {
 function menu_close() {
     if(menu_wrap.style.width === ori_wid) return;
     //팝업
-    popup_close();
+    popup_close("search-popup");
 
     menu_wrap.style.width = ori_wid;
 
@@ -317,20 +371,22 @@ function menu_close() {
 
 function popup_open(popupwindow) {
     //마스크 켬
-    var popup = document.getElementById("mask");
+    var popup = document.getElementById(popupwindow);
     popup.classList.add("popup-show");
+    popup.classList.remove(hide_btn_class);
     //팝업창 켬
-    popup = document.getElementById(popupwindow);
-    popup.classList.add("popup-show");
+//    popup = document.getElementById(popupwindow);
+//    popup.classList.add("popup-show");
 }
 
-function popup_close() {
+function popup_close(popupwindow) {
     //마스크
-    var popup = document.getElementById("mask");
+    var popup = document.getElementById(popupwindow);
     popup.classList.remove("popup-show");
+    popup.classList.add(hide_btn_class);
     //팝업창
-    popup = document.getElementById("popup-content");
-    popup.classList.remove("popup-show");
+//    popup = document.getElementById("popup-content");
+//    popup.classList.remove("popup-show");
 }
 
 function menu_search() {
@@ -338,7 +394,7 @@ function menu_search() {
 
     if(!document.getElementById("popup-content").classList.contains("popup-show")) {
 	    //팝업 열기
-	    popup_open("popup-content");
+	    popup_open("search-popup");
 	    //검색창 열기
 	    show_menu("search", "searchbox");
     }

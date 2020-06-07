@@ -38,9 +38,12 @@ var tMoveEvt = false;
 //스위프 인식
 var touchstart_x = null;
 var swipe = false;
+//탭or클릭 중 하나만 되게하기
+var startTap = false;
+var startClick = false;
 //탭
 function tapEvt(fuc, right, left) {
-	window.addEventListener("touchstart", function (e) {
+	document.querySelector("body").addEventListener("touchstart", function (e) {
 		tStartEvt = true;
 		touchstart_x = e.touches[0].screenX;
 	});
@@ -59,7 +62,7 @@ function tapEvt(fuc, right, left) {
 			left(e);
 		}
 	});
-	window.addEventListener("touchend", function(e) {
+	document.querySelector("body").addEventListener("touchend", function(e) {
 		touchstart_x = null;
 		//Tap인지 판단
 		if(!(tStartEvt && !tMoveEvt)) {
@@ -70,7 +73,20 @@ function tapEvt(fuc, right, left) {
 			return;
 		}
 		
+		startTap = true;
+		console.log("tap");
 		fuc(e);
+	});
+	
+	document.querySelector("body").addEventListener("click", function(e) {
+		touchstart_x = null;
+
+		if(!startTap) {
+			console.log("click");
+			fuc(e);
+			startTap = false;
+		}
+		
 	});
 }
 

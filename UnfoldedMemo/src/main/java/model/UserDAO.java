@@ -23,7 +23,7 @@ public class UserDAO {
 	private Connection getConnection() {
 		
 		String driver = "org.mariadb.jdbc.Driver";
-		String url = "jdbc:mariadb://localhost:3306/je25th"; 
+		String url = "jdbc:mariadb://je25th.cafe24.com/je25th";//"jdbc:mariadb://localhost:3306/je25th";
 		String username = "je25th"; 
 		String password = "awow35se!";
 		

@@ -4,6 +4,11 @@
     --themecolor: rgb(252, 165, 179);
     --memuwrapsize: 50px;
     --memusize: 40px;
+    --contenet-line-height: 170%;
+    --content-font: 'NanumSquare', sans-serif;
+    --content-font-size: 16px;
+    --title-font-size: 18px;
+    --title-font-weight: 700;
 }
 
 * {
@@ -29,10 +34,22 @@ span {
     position: relative;
 }
 
+button {
+    box-sizing: border-box;
+    margin: 0;
+	background-color: #ffffff;
+    border: none;
+    cursor: pointer;
+    
+    outline: 0;
+}
+
 html {
     box-sizing: border-box;
-    font-family: 'NanumSquare', sans-serif;
-    line-height: 170%;
+    
+    font-family: var(--content-font);
+    font-size: var(--content-font-size);
+    line-height: var(--contenet-line-height);
 }
 
 body {
@@ -136,7 +153,7 @@ li.memo-hashtag {
 .memo-title {
     margin: 0 0 4px 0;
 
-    font-size: 18px;
+    font-size: var(--title-font-size);
     font-weight: bold;
 }
 
@@ -177,17 +194,77 @@ li.memo-hashtag {
 }
 
 /* pop */
-.popup-mask {
-    position: fixed; 
+.popup-wrap {
+	position: fixed; 
     left: 0; 
     top: 0; 
     width: 100%; 
-    height: 100%; 
-    background-color: rgba(0, 0, 0, 0.5); 
+    height: 100%;
+     
     opacity: 0; 
     visibility: hidden; 
     transform: scale(1.1); 
     transition: visibility 0s linear 0.25s, opacity 0.25s 0s, transform 0.25s;
+}
+
+.popup-mask {
+    position: relative; 
+    left: 0; 
+    top: 0; 
+    width: 100%; 
+    height: 100%; 
+	background-color: rgba(0, 0, 0, 0.5); 
+}
+
+.popup-delete {
+    position: absolute; 
+    
+    left: calc(50% - 125px); 
+    top: calc(50% - 75px); 
+    width: 250px; 
+    height: 150px; 
+    
+	background-color: white; 
+	border: 0.5px solid gray;
+}
+
+.popup-delete-info {
+    width: 250px; 
+    height: 100px; 
+	border-bottom: 1px solid lightgray;
+	
+	vertical-align: middle;
+    text-align: center;
+}
+
+.popup-delete-btn {
+    position: absolute; 
+    left: 0; 
+    top: 100px; 
+    
+	border-top: 1px solid lightgray;
+    
+	white-space: nowrap;
+}
+
+.popup-delete-btn-cancle {
+    position: absolute; 
+    left: 0; 
+    top: 0; 
+    
+    width: 125px; 
+    height: 50px; 
+	border-right: 0.5px solid lightgray;
+}
+.popup-delete-btn-delete {
+    position: absolute; 
+    left: 125px; 
+    top: 0; 
+    
+    width: 125px; 
+    height: 50px; 
+	color: red;
+	border-left: 0.5px solid lightgray;
 }
 
 .popup-content { 
@@ -205,7 +282,6 @@ li.memo-hashtag {
     border-top-left-radius: 20px;
     border-top-right-radius: 20px;
     
-    visibility: hidden; 
     overflow-y: auto;
 }
 
@@ -381,7 +457,18 @@ textarea {
     overflow: hidden;
     width: 100%;
     border: 0;
-    font-family: 'NanumSquare', sans-serif;
+	font-family: var(--content-font);
+	outline: 0;
+}
+
+.textarea-title {
+	font-size: var(--title-font-size);
+	font-weight: var(--title-font-weight);
+}
+
+.textarea-content {
+    font-size: var(--content-font-size);
+    line-height: var(--contenet-line-height);
 }
 
 .write-top {

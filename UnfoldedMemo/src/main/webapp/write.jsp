@@ -36,10 +36,10 @@ if(request.getAttribute("memodata") != null) {
     </header>
     <div class="write-content">
         <div class="write-content-title">
-            <textarea id="title" name="title" style="height: 25px; font-size: 20px; font-weight: 700;" readonly><%=(memoData!=null)?memoData.getTitle():""%></textarea>
+            <textarea id="title" name="title" class="textarea-title" style="height: 25px;" readonly><%=(memoData!=null)?memoData.getTitle():""%></textarea>
         </div>
         <div class="write-content-textarea">
-            <textarea id="content" name="content" style="height: 300px; font-size: 16px" readonly><%=(memoData!=null)?memoData.getContent():""%></textarea>
+            <textarea id="content" name="content" class="textarea-content" style="height: 300px;" readonly><%=(memoData!=null)?memoData.getContent():""%></textarea>
         </div>
         <div class="write-content-add">
             <div id="hashtag-textbox" class="add-hashtage hide">

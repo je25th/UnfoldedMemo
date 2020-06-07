@@ -19,19 +19,21 @@
     </div>
     
     <!-- 팝업메뉴 시작 -->
-    <div id="mask" class="popup-mask"></div>
-    <div id="popup-content" class="popup-content">
-    	<!-- 키워드 모드 -->
-    	<div id="keyword_search_mode">
-	        <div class="search-order">
-	        	정렬순서 <i class="icon-star memo-staroff"></i> ! !! !!!
+    <div id='search-popup' class='popup-wrap hide'>
+	    <div class="popup-mask"></div>
+	    <div id="popup-content" class="popup-content">
+	    	<!-- 키워드 모드 -->
+	    	<div id="keyword_search_mode">
+		        <div class="search-order">
+		        	정렬순서 <i class="icon-star memo-staroff"></i> ! !! !!!
+		        </div>
+		        <div></div>
+	    	</div>
+	    	<!-- 해쉬태그 모드 -->
+	        <div id="hashtag_search_mode" class="hashtaglist hide">
+	            <ul id="hashtag-list"></ul>
 	        </div>
-	        <div></div>
-    	</div>
-    	<!-- 해쉬태그 모드 -->
-        <div id="hashtag_search_mode" class="hashtaglist hide">
-            <ul id="hashtag-list"></ul>
-        </div>
+	    </div>
     </div>
     <!-- 팝업메뉴 끝 -->
 
@@ -69,6 +71,22 @@
             </li>
         </ul>
     </nav>
+    
+    <!-- 삭제확인 팝업 시작 -->
+    <div id='delete-popup' class='popup-wrap hide'>
+	    <div class='popup-mask'></div>
+	    <div class='popup-delete'>
+	    	<div class='popup-delete-info'>
+	    		삭제할래?
+	    	</div>
+	    	<div class='popup-delete-btn'>
+	    		<button id='popup-btn-cancle' class='popup-delete-btn-cancle'>취소</button>
+	    		<button id='popup-btn-delete' class='popup-delete-btn-delete'>삭제</button>
+	    	</div>
+	    </div>
+    </div>
+    <!-- 삭제확인 팝업 끝 -->
+    
 </div>
 
 <script type="text/Javascript" charset="UTF-8" src="common.js"></script>
