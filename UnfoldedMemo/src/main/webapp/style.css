@@ -42,6 +42,9 @@ button {
     cursor: pointer;
     
     outline: 0;
+    
+    font-family: var(--content-font);
+    font-size: var(--content-font-size);
 }
 
 html {
@@ -189,10 +192,6 @@ li.memo-hashtag {
 	padding: 0 5px 0 0;
 }
 
-.offcolor {
-    color: lightgray;
-}
-
 /* pop */
 .popup-wrap {
 	position: fixed; 
@@ -247,7 +246,7 @@ li.memo-hashtag {
 	white-space: nowrap;
 }
 
-.popup-delete-btn-cancle {
+.popup-delete-btn-cancel {
     position: absolute; 
     left: 0; 
     top: 0; 
@@ -478,11 +477,33 @@ textarea {
     left: 0;
     width: 100%;
     height: 50px;
-
+    
     vertical-align: middle;
 
     background-color: white;
     border-bottom: 1px solid lightgray;
+}
+
+.write-btn {
+    padding: 0 20px;
+	white-space: nowrap;
+    
+	background-color: rgba(0, 0, 0, 0);
+	color: gray;
+}
+
+.write-btn-cancel {
+	position: absolute; 
+    top: 0; 
+    height: 100%;
+	left: 0;
+}
+
+.write-btn-finish {
+	position: absolute; 
+    top: 0; 
+    height: 100%;
+	right: 0;
 }
 
 .write-content {
@@ -491,17 +512,19 @@ textarea {
 }
 
 .write-content-title {
-    padding: 10px 20px 10px 20px;
+    padding: 10px 0 0 0;
     border-bottom: 1px solid lightgray;
 }
 
 .write-content-textarea {
-    padding: 10px 0 10px 0;
+	height: auto;
+	vertical-align: middle;
+    padding: 10px 0;
+    border-bottom: 1px solid lightgray;
 }
 
 .write-content-add {
     padding: 10px 0 10px 0;
-
 }
 
 .write-search-hashtag {
@@ -526,7 +549,27 @@ textarea {
     color: darkgray;
 }
 
-/* 공통 */
+.write-etc {
+	position: relative;
+	height: 30px;
+	font-size: 13px;
+	color: lightgray;
+	padding: 0 0 0 20px;
+}
+
+.write-btn-delete {
+	float: right;
+	right: 0;
+    height: 100%;
+	color: lightgray;
+	padding-bottom: 5px; 
+}
+
+/* 공통 온오프 */
 .hide {
     display: none;
+}
+
+.offcolor {
+    color: lightgray;
 }

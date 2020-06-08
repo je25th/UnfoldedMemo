@@ -49,7 +49,7 @@ function loadmemo() {
 	}
 }
 
-//삭제 보관함 버튼 숨기기
+//스위프 삭제 보관함 버튼 숨기기
 function article_btn_close(article) {
 	if(article == null)
 		return false;
@@ -73,7 +73,7 @@ function addMenuEvt() {
 		var p = e.target;
 		
 		//팝업 버튼
-		//삭제버튼 클릭
+		//찐삭제버튼 클릭
 		if(p.id == "popup-btn-delete") {
 			if(SelectedArticle == null) return;
 			
@@ -91,7 +91,7 @@ function addMenuEvt() {
 		    return;
 		}
 		//취소버튼 클릭
-		if(p.id == "popup-btn-cancle" || p.id == "popup-btn-delete") {
+		if(p.id == "popup-btn-cancel" || p.id == "popup-btn-delete") {
 			popup_close("delete-popup");
 		    article_btn_close(SelectedArticle);
 		}
@@ -115,7 +115,7 @@ function addMenuEvt() {
 			
 			//상세페이지로
 			if(p.localName == "article") {
-				//삭제버튼
+				//스위프 삭제버튼
 				if(e.target.className == "swipe-delete") {
 					popup_open("delete-popup");
 					console.log(p.id + " delete");
@@ -123,7 +123,7 @@ function addMenuEvt() {
 					
 					return;
 				}
-				//보관함버튼
+				//스위프 보관함버튼
 				if(e.target.className == "swipe-box") {
 					SelectedArticle = p;
 					return;
@@ -195,16 +195,6 @@ function addMenuEvt() {
 	
 	//스크롤
 	window.addEventListener("scroll", function(e) {
-	    //메뉴 닫기 
-        var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        if(scrollTop > lastScrollTop) return;
-
-        lastScrollTop = scrollTop;
-        menu_close();
-        
-        //보관함 삭제버튼 닫기
-        article_btn_close(SelectedArticle);
-        
         //메모 불러오기
 		var scrollHeight = e.target.scrollingElement.scrollHeight;
 		var nowscroll = e.target.scrollingElement.scrollTop + e.target.scrollingElement.clientHeight;
@@ -212,6 +202,16 @@ function addMenuEvt() {
 			console.log("scroll end");
 			scrollpage++;
 			loadmemo();
+			
+	    //메뉴 닫기 
+        var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        if(scrollTop > lastScrollTop) return;
+
+        lastScrollTop = scrollTop;
+        menu_close();
+        
+        //스위프 보관함 삭제버튼 닫기
+        article_btn_close(SelectedArticle);
 		}
 		
 //		console.log("---------------------------------");

@@ -39,8 +39,8 @@ var tMoveEvt = false;
 var touchstart_x = null;
 var swipe = false;
 //탭or클릭 중 하나만 되게하기
-var startTap = false;
-var startClick = false;
+var alreadyTaped = false;
+var alreadyClicked = false;
 //탭
 function tapEvt(fuc, right, left) {
 	document.querySelector("body").addEventListener("touchstart", function (e) {
@@ -73,20 +73,22 @@ function tapEvt(fuc, right, left) {
 			return;
 		}
 		
-		startTap = true;
+		if(alreadyClicked) return;
+		
+		alreadyTaped = true;
 		console.log("tap");
 		fuc(e);
+		alreadyClicked = false;
 	});
 	
 	document.querySelector("body").addEventListener("click", function(e) {
 		touchstart_x = null;
+		if(alreadyTaped) return;
 
-		if(!startTap) {
-			console.log("click");
-			fuc(e);
-			startTap = false;
-		}
-		
+		alreadyClicked = true;
+		console.log("click");
+		fuc(e);
+		alreadyTaped = false;
 	});
 }
 

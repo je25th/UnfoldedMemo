@@ -80,7 +80,7 @@
 	    		삭제할래?
 	    	</div>
 	    	<div class='popup-delete-btn'>
-	    		<button id='popup-btn-cancle' class='popup-delete-btn-cancle'>취소</button>
+	    		<button id='popup-btn-cancel' class='popup-delete-btn-cancel'>취소</button>
 	    		<button id='popup-btn-delete' class='popup-delete-btn-delete'>삭제</button>
 	    	</div>
 	    </div>

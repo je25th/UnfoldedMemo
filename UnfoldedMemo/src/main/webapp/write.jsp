@@ -30,13 +30,12 @@ if(request.getAttribute("memodata") != null) {
 
 <div class="container">
     <header class="write-top">
-        <button id="cancel">취소</button>
-        <button id="finish">수정</button>
-        <button id="delete">삭제</button>
+        <button id='cancel' class='write-btn write-btn-cancel'><i class='icon-arrow_left'></i></button>
+        <button id='finish' class='write-btn write-btn-finish'>수정</button>
     </header>
     <div class="write-content">
         <div class="write-content-title">
-            <textarea id="title" name="title" class="textarea-title" style="height: 25px;" readonly><%=(memoData!=null)?memoData.getTitle():""%></textarea>
+            <textarea id="title" name="title" class="textarea-title" style="height: 20px;" readonly><%=(memoData!=null)?memoData.getTitle():""%></textarea>
         </div>
         <div class="write-content-textarea">
             <textarea id="content" name="content" class="textarea-content" style="height: 300px;" readonly><%=(memoData!=null)?memoData.getContent():""%></textarea>
@@ -77,6 +76,24 @@ if(request.getAttribute("memodata") != null) {
             <ul id="hashtag-search-list" class="hide"></ul>
         </div>
     </div>
+    <footer class='write-etc'>
+    	<%=(memoData!=null)?memoData.getMdate().substring(0, 19):""%>
+    	<button id='delete' class='write-btn write-btn-delete'><i class='icon-trash_can'></i></button>
+    </footer>
+    <!-- 삭제확인 팝업 시작 -->
+    <div id='delete-popup' class='popup-wrap hide'>
+	    <div class='popup-mask'></div>
+	    <div class='popup-delete'>
+	    	<div class='popup-delete-info'>
+	    		삭제할래?
+	    	</div>
+	    	<div class='popup-delete-btn'>
+	    		<button id='popup-btn-cancel' class='popup-delete-btn-cancel'>취소</button>
+	    		<button id='popup-btn-delete' class='popup-delete-btn-delete'>삭제</button>
+	    	</div>
+	    </div>
+    </div>
+    <!-- 삭제확인 팝업 끝 -->
 </div>
 
 <script type="text/Javascript" charset="UTF-8" src="common.js"></script>
@@ -91,7 +108,7 @@ var selectedId = "selected_id";
 //이벤트리스너 등록
 addEvtInit();
 //뷰모드 수정모드의 경우
-autoBoxsizing(document.getElementById("title"), "25px");
+autoBoxsizing(document.getElementById("title"), "20px");
 autoBoxsizing(document.getElementById("content"), "300px");
 
 function autoBoxsizing(textarea, defult) {
@@ -107,18 +124,32 @@ function autoBoxsizing(textarea, defult) {
 function addHashtag(id, name) {
 	var ul = document.getElementById("selected-hashtag-list");
 	ul.innerHTML += "<li id='" + id + "' class='hashtag-search inline'>" + name + "</li>";
+	
+	//완료버튼 온오프
+	submitBtnOnOff();
 	//console.log(id.replace("hashtaglist",""));
 }
 
 //완료버튼 온오프
-function submitBtnOnOff(e) {
+function submitBtnOnOff() {
 	var btn = document.getElementById("finish");
 	if(btn.innerHTML == "수정") return;
 	
-	if(e.srcElement.textLength === 0) 
-		btn.classList.add(hide_class);
+	var checkcount = 0;
+	
+	//태그 선택 체크
+	console.log(document.getElementById("selected-hashtag-list").childElementCount);
+	if(document.getElementById("selected-hashtag-list").childElementCount > 1)//wowpoint 고정
+		checkcount++;
+	
+	//내용 텍박 체크
+	if(document.getElementById("content").textLength > 0) 
+		checkcount++;
+	
+	if(checkcount > 0)
+		btn.classList.remove("offcolor");
 	else
-		btn.classList.remove(hide_class);
+		btn.classList.add("offcolor");
 }
 
 function getHashtag() {
@@ -170,9 +201,24 @@ function writeMode() {
 	//완료버튼
 	var btn = document.getElementById("finish");
 	btn.innerHTML = "완료";
+	btn.classList.add("offcolor");
 	
 	//삭제버튼 숨김
 	document.getElementById("delete").classList.add(hide_class);
+}
+
+function popup_open(popupwindow) {
+    //마스크 켬
+    var popup = document.getElementById(popupwindow);
+    popup.classList.add("popup-show");
+    popup.classList.remove(hide_class);
+}
+
+function popup_close(popupwindow) {
+    //마스크
+    var popup = document.getElementById(popupwindow);
+    popup.classList.remove("popup-show");
+    popup.classList.add(hide_class);
 }
 
 //이벤트 등록(한번 등록하면 끝)
@@ -189,27 +235,57 @@ function addEvtInit() {
 	
 	//토글버튼
 	tapEvt(function(e) {
-		//var arr = e.path;
+		var p = e.target;
+		
+		//팝업 버튼
+		//삭제버튼 클릭
+		if(p.id == "popup-btn-delete") {			
+			var idx = location.search.replace("?idx=", "");
+			ajax_getJson('./deletememo.receive', 'idx='+idx, function(){
+				window.location.href = "./main";
+			});
+			
+		    return;
+		}
+		//취소버튼 클릭
+		if(p.id == "popup-btn-cancel" || p.id == "popup-btn-delete") {
+			//팝업닫기
+			popup_close("delete-popup");
+		}
+		
+		//팝업닫기
+		if(p == document.getElementById("delete-popup").firstElementChild) {			
+		    popup_close("delete-popup");
+		    
+		    return;
+		}
+		
+		
 		var target = e.target;//.parentElement;
 		//해쉬태그
 		if(target.id != null && target.id.indexOf(hashtagId) >= 0) {
 			if(document.getElementById("finish").innerHTML != "완료") return;
-			
+			//해쉬태그 선택
 			addHashtag(target.id.replace(hashtagId, selectedId), target.firstChild.textContent);
 			target.classList.add(hide_class);
 			return;
 		}
 		else if(target.id != null && target.id.indexOf("selected_id") >= 0) {
 			if(document.getElementById("finish").innerHTML != "완료") return;
-			
+			//해쉬태그 선택 해제
 			document.getElementById("selected-hashtag-list").removeChild(document.getElementById(target.id));
 			document.getElementById(target.id.replace(selectedId, hashtagId)).classList.remove(hide_class);
+			//완료버튼 온오프
+			submitBtnOnOff();
+			
 			return;
 		}
 		else if(target.id == "none") {
 			if(document.getElementById("finish").innerHTML != "완료") return;
-			
+			//해쉬태그 선택 해제
 			document.getElementById("selected-hashtag-list").removeChild(document.getElementById(target.id));
+			//완료버튼 온오프
+			submitBtnOnOff();
 			return;
 		}
 		
@@ -298,14 +374,15 @@ function addEvtInit() {
 	//삭제 버튼 이벤트
 	document.getElementById("delete").addEventListener("click", function (e) {
 		if(location.search.length > 0) {
-			var idx = location.search.replace("?idx=", "");
-			ajax_getJson('./deletememo.receive', 'idx='+idx, function(){window.location.href = "./main";});
+			//팝업켬
+			popup_open("delete-popup");
 		}
 	});
 	
 	//취소 버튼 이벤트
 	document.getElementById("cancel").addEventListener("click", function(e) {
-		console.log("취소버튼");
+		//console.log("취소버튼");
+		history.back();
 	});
 	
 	//완료 버튼 이벤트
@@ -322,6 +399,9 @@ function addEvtInit() {
 			e.srcElement.innerHTML = "완료"; */
 			return;
 		}
+		
+		//내용 제한 체크
+		if(e.target.classList.contains("offcolor")) return;
 
 		console.log("완료버튼");
 		//memo
@@ -373,7 +453,6 @@ function addEvtInit() {
 	
 	//제목 텍스트박스
 	document.getElementById("title").addEventListener("keydown", function(e) {
-	    
 	    //글자수 제한
 	    //console.log(e.srcElement.textLength);
 	    if(e.srcElement.textLength >= 20) {
@@ -386,7 +465,7 @@ function addEvtInit() {
 	    //console.log(e);
 	    
 	    //박스 사이즈 자동 조절
-	    autoBoxsizing(e.srcElement, "25px");
+	    autoBoxsizing(e.srcElement, "20px");
 	});
 	
 	//내용 텍스트박스
