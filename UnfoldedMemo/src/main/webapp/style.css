@@ -4,11 +4,7 @@
     --themecolor: rgb(252, 165, 179);
     --memuwrapsize: 50px;
     --memusize: 40px;
-    --contenet-line-height: 170%;
     --content-font: 'NanumSquare', sans-serif;
-    --content-font-size: 16px;
-    --title-font-size: 18px;
-    --title-font-weight: 700;
 }
 
 * {
@@ -20,14 +16,6 @@ ul {
     list-style-type: none;
     margin: 0px;
     padding: 0px;
-}
-
-.inline {
-    display: inline-block;
-}
-
-li.wicon {
-    padding: 0 7px 0 0;
 }
 
 span {
@@ -43,16 +31,17 @@ button {
     
     outline: 0;
     
+    /* 폰트 */
     font-family: var(--content-font);
-    font-size: var(--content-font-size);
+    font-size: 16px;
 }
 
 html {
     box-sizing: border-box;
     
-    font-family: var(--content-font);
-    font-size: var(--content-font-size);
-    line-height: var(--contenet-line-height);
+    /* font-family: var(--content-font);
+    font-size: 16px;
+    line-height: 170%; */
 }
 
 body {
@@ -66,6 +55,36 @@ body {
     display: block;
     background: white;
     box-sizing: inherit;
+}
+
+/* 폰트설정 */
+.title {
+    font-family: var(--content-font);
+    font-size: 18px;
+    line-height: 150%;
+    font-weight: 700;/*300 400 700 800*/
+    
+    white-space:pre-wrap
+}
+
+.content {
+    font-family: var(--content-font);
+    font-size: 16px;
+    line-height: 170%;
+    
+    white-space:pre-wrap
+}
+
+.hashtag {
+    font-family: var(--content-font);
+    font-size: 14px;
+    line-height: nomal;
+    color: var(--themecolor);
+}
+
+.mdate {
+    font-size: 12px;
+    color: gray;
 }
 
 /* memo */
@@ -103,6 +122,10 @@ body {
 	
     display: block;
 	background-color: red;
+	
+	/* 폰트 */
+    font-family: var(--content-font);
+	color: white;
 }
 
 .swipe-box {
@@ -113,12 +136,28 @@ body {
 	
     display: block;
 	background-color: skyblue;
+	
+	/* 폰트 */
+    font-family: var(--content-font);
+	color: white;
+}
+
+.swipe-icon {
+	position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-100%);
+    -webkit-transform: translate(-50%,-100%);
+}
+
+.icon-caption {
+	margin: 20px 0 0 0;
 }
 
 .momo-inner {
     transition: visibility 0s linear 0.25s, opacity 0.25s 0s, transform 0.25s;
 	background-color: white;
-    padding: 7px 15px;
+    padding: 15px 15px 5px 15px;
     /* margin: 0px 15px; 
     border-bottom: 1px solid #e0e0e0; */
 }
@@ -126,17 +165,16 @@ body {
 .memo-top {
     position: relative;
     margin: 0 0 6px 0;
-    font-size: 14px;
-    /* font-style: italic; */
-    color: var(--themecolor);
     white-space: nowrap;
 }
 
 .memo-imp {
     position: absolute;
+    background-color: white;
+    
+    /* 폰트 */
     font-weight: 800;
     color: rgb(231, 26, 26);
-    background-color: white;
 }
 
 .slider {
@@ -154,15 +192,11 @@ li.memo-hashtag {
 }
 
 .memo-title {
-    margin: 0 0 4px 0;
-
-    font-size: var(--title-font-size);
-    font-weight: bold;
+    margin: 5px 0;
 }
 
 .memo-content {
     margin: 0 0 5px 0;
-    white-space:pre-wrap
 }
 
 .memo-bottom {
@@ -171,25 +205,29 @@ li.memo-hashtag {
 
 .memo-date {
 	vertical-align: middle;
-    font-size: 12px;
-    color: gray;
 }
 
 .space {
 	vertical-align: middle;
 	padding: 0 8px;
-    font-size: 12px;
+	
+	/*폰트*/
+	color: lightgray;
 }
 
 .memo-star {
+	vertical-align: middle;
+	
+	/* 폰트 */
 	font-size: 1.25em;
     color: rgb(255, 217, 0);
-	vertical-align: middle;
 }
 
 .memo-wowpoint {
-	color: rgb(216, 7, 13);
 	padding: 0 5px 0 0;
+	
+	/* 폰트 */
+	color: rgb(216, 7, 13);
 }
 
 /* pop */
@@ -212,6 +250,7 @@ li.memo-hashtag {
     top: 0; 
     width: 100%; 
     height: 100%; 
+    
 	background-color: rgba(0, 0, 0, 0.5); 
 }
 
@@ -234,6 +273,18 @@ li.memo-hashtag {
 	
 	vertical-align: middle;
     text-align: center;
+    
+    /* 폰트 */
+    font-family: var(--content-font);
+    font-size: 16px;
+}
+
+.info-content {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+    transform: translate(-50%,-100%);
+	-webkit-transform: translate(-50%,-100%);
 }
 
 .popup-delete-btn {
@@ -262,8 +313,11 @@ li.memo-hashtag {
     
     width: 125px; 
     height: 50px; 
-	color: red;
+    
 	border-left: 0.5px solid lightgray;
+    
+    /* 폰트 */
+	color: red;
 }
 
 .popup-content { 
@@ -274,7 +328,9 @@ li.memo-hashtag {
     /* top: 50%; 
     left: 50%; 
     transform: translate(-50%, -50%);  */
+    
     background-color: seashell;
+    
     padding: 10px 10px 110px 10px; 
     width: 100%; 
     height: 50%; 
@@ -303,11 +359,6 @@ li.memo-hashtag {
 .hashtag-search {
     background-color: white;
 
-    line-height: normal;
-    font-size: 14px;
-    color: var(--themecolor);
-    font-weight: bold;
-
     box-sizing: border-box;
 
     margin: 5px;
@@ -315,14 +366,13 @@ li.memo-hashtag {
     height: 26px;
     border-radius: 26px;
     border: 1px solid var(--themecolor);
+    
+    /* 폰트 */
+    font-weight: bold;
 }
 
 .hashtag-unselected {
 	background-color: rgb(235, 235, 235);
-
-    line-height: normal;
-    font-size: 14px;
-    color: gray;
 
     box-sizing: border-box;
 
@@ -330,13 +380,18 @@ li.memo-hashtag {
     padding: 5px 7px 0 7px;
     height: 26px;
     border-radius: 26px;
+    
+    /* 폰트 */
+    color: gray;
 }
 
 .hashtag_count {
 	vertical-align: middle;
 	padding: 0 0 0 4px;
-	color: rgb(180, 180, 180);
+	
+	/* 폰트 */
 	font-size: 12px;
+	color: rgb(180, 180, 180);
 }
 
 /* nav */
@@ -347,7 +402,6 @@ li.memo-hashtag {
     height: var(--memuwrapsize);
     border-radius: var(--memuwrapsize);
     margin: 0 auto;
-    padding: 4px 0 0 0;
 
     width: var(--memuwrapsize);
     transition: width 200ms;
@@ -367,7 +421,6 @@ li.memo-hashtag {
     height: var(--memuwrapsize);
     border-radius: var(--memuwrapsize);
     margin: 0 auto;
-    padding: 4px 0 0 0;
 
     width: var(--memuwrapsize);
     transition: width 200ms;
@@ -403,6 +456,7 @@ li.memo-hashtag {
     vertical-align: middle;
     display: inline-block;
     
+    /* 폰트 */
     line-height: normal;
     color: rgb(255, 255, 255);
     font-size: 1.5em;
@@ -420,12 +474,12 @@ li.memo-hashtag {
 }
 
 .mode-keyword {
+	/* 폰트 */
 	color: rgba(255, 255, 255, 0.2);
 }
 
 .menu-textbox {
     display: inline-block;
-    margin: 0 0 8px 0;
     background-color: white;
 	
     height: calc(var(--memusize) - 5px);
@@ -447,7 +501,6 @@ input[type="text"].btn-textbox {
     border-radius: var(--memusize); */
     
     border: 0px;
-    font-size: 18px;
 }
 
 /* write */
@@ -456,18 +509,19 @@ textarea {
     overflow: hidden;
     width: 100%;
     border: 0;
-	font-family: var(--content-font);
+    
 	outline: 0;
+	
+    /* 폰트 */
+	font-family: var(--content-font);
 }
 
 .textarea-title {
-	font-size: var(--title-font-size);
-	font-weight: var(--title-font-weight);
+	
 }
 
 .textarea-content {
-    font-size: var(--content-font-size);
-    line-height: var(--contenet-line-height);
+	
 }
 
 .write-top {
@@ -489,6 +543,8 @@ textarea {
 	white-space: nowrap;
     
 	background-color: rgba(0, 0, 0, 0);
+	
+	/* 폰트 */
 	color: gray;
 }
 
@@ -531,20 +587,28 @@ textarea {
     width: 60%;/*calc(100% - 1em - 20px);*/
     margin: 10px 0 0 10px;
     border: 0;
+}
 
-    font-size: 14px;
+
+li.wicon {
+    padding: 0 3px 0 0;
+    width: 25px; 
+    text-align: center;
+    line-height: nomal;
 }
 
 .on {
     background-color: var(--themecolor);
 
+    border: 1px solid var(--themecolor);
+
+	/* 폰트 */
     color: white;
     font-weight: bold;
-
-    border: 1px solid var(--themecolor);
 }
 
 .write-tagicon {
+	/* 폰트 */
     font-size: 1em;
     color: darkgray;
 }
@@ -552,8 +616,6 @@ textarea {
 .write-etc {
 	position: relative;
 	height: 30px;
-	font-size: 13px;
-	color: lightgray;
 	padding: 0 0 0 20px;
 }
 
@@ -561,15 +623,26 @@ textarea {
 	float: right;
 	right: 0;
     height: 100%;
-	color: lightgray;
 	padding-bottom: 5px; 
+	
+    /* 폰트 */
+	color: lightgray;
 }
 
 /* 공통 온오프 */
-.hide {
-    display: none;
+.offcolor {
+	/* 폰트 */
+    color: lightgray;
 }
 
-.offcolor {
-    color: lightgray;
+.inline {
+    display: inline-block;
+}
+
+.bold {
+	font-weight: 700;
+}
+
+.hide {
+    display: none;
 }

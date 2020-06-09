@@ -77,7 +77,10 @@
 	    <div class='popup-mask'></div>
 	    <div class='popup-delete'>
 	    	<div class='popup-delete-info'>
-	    		삭제할래?
+	    		<div class='info-content'>
+		    		<p class='bold'>메모삭제</p>
+		    		<p>삭제하시겠습니까?</p>
+	    		</div>
 	    	</div>
 	    	<div class='popup-delete-btn'>
 	    		<button id='popup-btn-cancel' class='popup-delete-btn-cancel'>취소</button>

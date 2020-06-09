@@ -35,15 +35,15 @@ if(request.getAttribute("memodata") != null) {
     </header>
     <div class="write-content">
         <div class="write-content-title">
-            <textarea id="title" name="title" class="textarea-title" style="height: 20px;" readonly><%=(memoData!=null)?memoData.getTitle():""%></textarea>
+            <textarea id="title" name="title" class="textarea-title title" style="height: 20px;" readonly><%=(memoData!=null)?memoData.getTitle():""%></textarea>
         </div>
         <div class="write-content-textarea">
-            <textarea id="content" name="content" class="textarea-content" style="height: 300px;" readonly><%=(memoData!=null)?memoData.getContent():""%></textarea>
+            <textarea id="content" name="content" class="textarea-content content" style="height: 300px;" readonly><%=(memoData!=null)?memoData.getContent():""%></textarea>
         </div>
         <div class="write-content-add">
             <div id="hashtag-textbox" class="add-hashtage hide">
                 <i class="icon-hashtag write-tagicon"></i> 
-                <input type="text" id="search-hashtag" class="write-search-hashtag">
+                <input type="text" id="search-hashtag" class="hashtag write-search-hashtag">
                 <button id="add-hashtag" class='hide'>추가</button>
             </div>
             <ul id="selected-hashtag-list">
@@ -66,7 +66,7 @@ if(request.getAttribute("memodata") != null) {
 		        	int size = memoData.getHashtaglist().size();
 		            for(int i=0; i<size; i++) {
 		        %>
-	            	<li id='selected_id<%=memoData.getHashtaglist().get(i).getIdx()%>' class='hashtag-search inline'>#<%=memoData.getHashtaglist().get(i).getHashtag()%></li>
+	            	<li id='selected_id<%=memoData.getHashtaglist().get(i).getIdx()%>' class='hashtag hashtag-search inline'>#<%=memoData.getHashtaglist().get(i).getHashtag()%></li>
 	            <%
 		            }
 	            }
@@ -76,7 +76,7 @@ if(request.getAttribute("memodata") != null) {
             <ul id="hashtag-search-list" class="hide"></ul>
         </div>
     </div>
-    <footer class='write-etc'>
+    <footer class='mdate write-etc'>
     	<%=(memoData!=null)?memoData.getMdate().substring(0, 19):""%>
     	<button id='delete' class='write-btn write-btn-delete'><i class='icon-trash_can'></i></button>
     </footer>
@@ -85,7 +85,10 @@ if(request.getAttribute("memodata") != null) {
 	    <div class='popup-mask'></div>
 	    <div class='popup-delete'>
 	    	<div class='popup-delete-info'>
-	    		삭제할래?
+	    		<div class='info-content'>
+		    		<p class='bold'>메모삭제</p>
+		    		<p>삭제하시겠습니까?</p>
+	    		</div>
 	    	</div>
 	    	<div class='popup-delete-btn'>
 	    		<button id='popup-btn-cancel' class='popup-delete-btn-cancel'>취소</button>
@@ -110,6 +113,7 @@ addEvtInit();
 //뷰모드 수정모드의 경우
 autoBoxsizing(document.getElementById("title"), "20px");
 autoBoxsizing(document.getElementById("content"), "300px");
+submitBtnOnOff();
 
 function autoBoxsizing(textarea, defult) {
 	//console.log(textarea);
@@ -120,10 +124,10 @@ function autoBoxsizing(textarea, defult) {
 	//console.log(textarea.style.height);
 }
 
-//해쉬태그 선택  <li id="hashtaglist_id5" class="hashtag-search inline">#와하<span class="hashtag_count">| 0</span></li>
+//해쉬태그 선택  
 function addHashtag(id, name) {
 	var ul = document.getElementById("selected-hashtag-list");
-	ul.innerHTML += "<li id='" + id + "' class='hashtag-search inline'>" + name + "</li>";
+	ul.innerHTML += "<li id='" + id + "' class='hashtag hashtag-search inline'>" + name + "</li>";
 	
 	//완료버튼 온오프
 	submitBtnOnOff();
@@ -166,7 +170,7 @@ function displayHashtag (ul, parsedJSON) {
 			h = " " + hide_class;
 		else
 			h = ""
-		ul.innerHTML += "<li id='" + hashtagId + data.idx + "' class='hashtag-unselected inline" + h + "'>#" + data.hashtag + 
+		ul.innerHTML += "<li id='" + hashtagId + data.idx + "' class='hashtag hashtag-unselected inline" + h + "'>#" + data.hashtag + 
 						"<span class='hashtag_count'>| " + data.count + "</span></li>";
 	});
 
@@ -262,6 +266,7 @@ function addEvtInit() {
 		
 		
 		var target = e.target;//.parentElement;
+		
 		//해쉬태그
 		if(target.id != null && target.id.indexOf(hashtagId) >= 0) {
 			if(document.getElementById("finish").innerHTML != "완료") return;
@@ -305,28 +310,6 @@ function addEvtInit() {
 			else {
 				target.firstElementChild.classList.remove("offcolor");
 			}
-			return;
-		}
-		
-		//해쉬태그 재검사
-		if(target.id != null && target.id.indexOf(hashtagId) >= 0) {
-			if(document.getElementById("finish").innerHTML != "완료") return;
-			
-			addHashtag(target.id.replace(hashtagId, selectedId), target.firstChild.textContent);
-			target.classList.add(hide_class);
-			return;
-		}
-		else if(target.id != null && target.id.indexOf("selected_id") >= 0) {
-			if(document.getElementById("finish").innerHTML != "완료") return;
-			
-			document.getElementById("selected-hashtag-list").removeChild(document.getElementById(target.id));
-			document.getElementById(target.id.replace(selectedId, hashtagId)).classList.remove(hide_class);
-			return;
-		}
-		else if(target.id == "none") {
-			if(document.getElementById("finish").innerHTML != "완료") return;
-			
-			document.getElementById("selected-hashtag-list").removeChild(document.getElementById(target.id));
 			return;
 		}
 		

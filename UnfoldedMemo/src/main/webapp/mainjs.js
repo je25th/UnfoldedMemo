@@ -57,7 +57,13 @@ function article_btn_close(article) {
 	if(article.firstElementChild.childNodes[2].style.transform != "none") {
 		article.firstElementChild.childNodes[2].style.transform = "none";
 		article.firstElementChild.childNodes[0].style.width = "0";
+		article.firstElementChild.childNodes[0].childNodes.forEach(function(item) {
+			item.classList.add(hide_btn_class);
+		});
 		article.firstElementChild.childNodes[1].style.width = "0";
+		article.firstElementChild.childNodes[1].childNodes.forEach(function(item) {
+			item.classList.add(hide_btn_class);
+		});
 		
 		SelectedArticle = null;
 		
@@ -116,7 +122,7 @@ function addMenuEvt() {
 			//상세페이지로
 			if(p.localName == "article") {
 				//스위프 삭제버튼
-				if(e.target.className == "swipe-delete") {
+				if(e.target.className == "swipe-delete" || (e.target.parentElement != null && e.target.parentElement.className == "swipe-delete")) {
 					popup_open("delete-popup");
 					console.log(p.id + " delete");
 					SelectedArticle = p;
@@ -124,12 +130,13 @@ function addMenuEvt() {
 					return;
 				}
 				//스위프 보관함버튼
-				if(e.target.className == "swipe-box") {
+				if(e.target.className == "swipe-box" || (e.target.parentElement != null && e.target.parentElement.className == "swipe-box")) {
 					SelectedArticle = p;
 					return;
 				}
 				
-				if(article_btn_close(p)) return;
+				//스위프 버튼 끔
+				if(article_btn_close(SelectedArticle)) return;
 				
 				var memo_idx = p.getAttribute("id");
 			    window.location.href = "./viewer?idx="+ +memo_idx;
@@ -168,6 +175,9 @@ function addMenuEvt() {
 				p.firstElementChild.childNodes[2].style.transform = "translate3d(+30%, 0px, 0px)";
 				//swipe-box
 				p.firstElementChild.childNodes[0].style.width = "30%";
+				p.firstElementChild.childNodes[0].childNodes.forEach(function(item) {
+					item.classList.remove(hide_btn_class);
+				});
 				SelectedArticle = p;
 				
 				break;
@@ -186,6 +196,9 @@ function addMenuEvt() {
 				p.firstElementChild.childNodes[2].style.transform = "translate3d(-30%, 0px, 0px)";
 				//swipe-delete
 				p.firstElementChild.childNodes[1].style.width = "30%";
+				p.firstElementChild.childNodes[1].childNodes.forEach(function(item) {
+					item.classList.remove(hide_btn_class);
+				});
 				SelectedArticle = p;
 				
 				break;
@@ -199,20 +212,19 @@ function addMenuEvt() {
 		var scrollHeight = e.target.scrollingElement.scrollHeight;
 		var nowscroll = e.target.scrollingElement.scrollTop + e.target.scrollingElement.clientHeight;
 		if(scrollHeight - nowscroll < 50 && scrollpage+1 == page) {
-			console.log("scroll end");
 			scrollpage++;
 			loadmemo();
-			
-	    //메뉴 닫기 
-        var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        if(scrollTop > lastScrollTop) return;
+		}
+		
+		//메뉴 닫기 
+		var scrollTop = e.target.scrollingElement.scrollTop;
+		if(Math.abs(scrollTop-lastScrollTop) < 50) return;
 
         lastScrollTop = scrollTop;
         menu_close();
         
         //스위프 보관함 삭제버튼 닫기
         article_btn_close(SelectedArticle);
-		}
 		
 //		console.log("---------------------------------");
 //		console.log("clientHeight:" + e.target.scrollingElement.clientHeight);
@@ -464,7 +476,7 @@ function displayHashtag (ul, parsedJSON) {
 //			h = " " + hide_class;
 //		else
 //			h = ""
-		ul.innerHTML += "<li id='" + hashtagId + data.idx + "' class='hashtag-unselected inline'>#" + data.hashtag + 
+		ul.innerHTML += "<li id='" + hashtagId + data.idx + "' class='hashtag hashtag-unselected inline'>#" + data.hashtag + 
 						"<span class='hashtag_count'>| " + data.count + "</span></li>";
 	});
 }
@@ -506,9 +518,10 @@ function displayMemolist (dom, parsedJSON) {
         //뿌림
 		condiv.innerHTML += '<article id="' + data.idx + '" class="memo">' +
 							'<div class="memo-swipe-wrap">' +
-							'<div class="swipe-box" style="width: 0"></div><div class="swipe-delete" style="width: 0"></div>' +
+							'<div class="swipe-box" style="width: 0"><i class="icon-file_open swipe-icon ' + hide_btn_class +'"></i><span class="swipe-icon icon-caption ' + hide_btn_class +'">box</span></div>' +
+							'<div class="swipe-delete" style="width: 0"><i class="icon-trash_can swipe-icon ' + hide_btn_class +'"></i><span class="swipe-icon icon-caption ' + hide_btn_class +'">delete</span></div>' +
 	                            '<div class="momo-inner" style="transform: none;">' +
-	                                '<div class="memo-top">' +
+	                                '<div class="hashtag memo-top">' +
 	                                    '<div class="memo-imp">'+'</div>' +
 	                                    '<div class="slider">' + 
 	                                        '<ul class="memo-hashtag-slider">' +
@@ -516,14 +529,14 @@ function displayMemolist (dom, parsedJSON) {
 	                                        '</ul>' +
 	                                    '</div>' +
 	                                '</div>' +
-	                                '<div class="memo-title">' +
+	                                '<div class="memo-title title">' +
 	                                    '<span>' + data.title + '</span>' +
 	                                '</div>' +
-	                                '<div class="memo-content">' +
+	                                '<div class="memo-content content">' +
 	                                    '<span>' + data.content + '</span>' +
 	                                '</div>' +
 	                                '<div class="memo-bottom">' +
-	                                    '<span class="memo-date">' + data.mdate.slice(0, 10) + '</span><span class="space">|</span>' + 
+	                                    '<span class="mdate memo-date">' + data.mdate.slice(0, 10) + '</span><span class="mdate space">|</span>' + 
 	                                    '<span class="starwrap"><i class="icon-star memo-star ' + staroff +'"></i></span>' +
 	                                '</div>' +
 	                            '</div>' +
